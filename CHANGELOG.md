@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.3] - 2026-07-24
+
+### Fixed
+- **Gemini Notebook rebrand breaks login detection and `NOTEBOOKLM_BASE_URL` (#269)** — Google has begun rebranding NotebookLM to "Gemini Notebook" and redirecting `notebooklm.google.com` to `notebook.google.com`. This broke two things: `nlm login` timed out because login-completion detection only recognized the legacy host (after sign-in the browser lands on `notebook.google.com`), and `NOTEBOOKLM_BASE_URL=https://notebook.google.com` was rejected by the base-URL allowlist. The new host is now recognized for login detection and accepted as a base-URL override. The canonical NotebookLM host set is centralized in `config.NOTEBOOKLM_HOSTS` (with a backwards-compatible `_ALLOWED_BASE_HOSTS` alias) so login detection and the base-URL allowlist stay in sync. The default remains `https://notebooklm.google.com`; accounts fully migrated to the new domain that still see `401` errors can set `NOTEBOOKLM_BASE_URL=https://notebook.google.com` to route all API calls at the new host. Thanks to **@grergea** for the detailed report.
+
 ## [0.9.2] - 2026-07-23
 
 ### Fixed

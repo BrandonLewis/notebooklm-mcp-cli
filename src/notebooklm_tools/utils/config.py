@@ -43,27 +43,40 @@ def safe_mkdir(
         ) from None
 
 
-_ALLOWED_BASE_HOSTS = {
+# All known NotebookLM / Gemini Notebook hosts.
+#
+# Google rebranded NotebookLM to "Gemini Notebook" and began redirecting
+# notebooklm.google.com to notebook.google.com (issue #269). Both hosts must be
+# recognized so that login-completion detection succeeds and so that
+# NOTEBOOKLM_BASE_URL=https://notebook.google.com is accepted. The enterprise
+# host (notebooklm.cloud.google.com) is also allowed.
+NOTEBOOKLM_HOSTS = {
     "notebooklm.google.com",
+    "notebook.google.com",
     "notebooklm.cloud.google.com",
 }
+
+# Backwards-compatible alias for the canonical host set.
+_ALLOWED_BASE_HOSTS = NOTEBOOKLM_HOSTS
 
 
 def get_base_url() -> str:
     """Get the NotebookLM base URL.
 
     Defaults to the personal URL (https://notebooklm.google.com).
-    Set NOTEBOOKLM_BASE_URL to override, e.g. for enterprise:
+    Set NOTEBOOKLM_BASE_URL to override, e.g.:
+        # Gemini Notebook rebrand (issue #269):
+        export NOTEBOOKLM_BASE_URL=https://notebook.google.com
+        # Enterprise NotebookLM:
         export NOTEBOOKLM_BASE_URL=https://notebooklm.cloud.google.com
     """
     url = os.environ.get("NOTEBOOKLM_BASE_URL", "https://notebooklm.google.com").rstrip("/")
     from urllib.parse import urlparse
 
     parsed = urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname not in _ALLOWED_BASE_HOSTS:
-        raise ValueError(
-            f"NOTEBOOKLM_BASE_URL must use https and one of: {_ALLOWED_BASE_HOSTS}. Got: {url}"
-        )
+    if parsed.scheme != "https" or parsed.hostname not in NOTEBOOKLM_HOSTS:
+        allowed = ", ".join(sorted(NOTEBOOKLM_HOSTS))
+        raise ValueError(f"NOTEBOOKLM_BASE_URL must use https and one of: {allowed}. Got: {url}")
     return url
 
 
