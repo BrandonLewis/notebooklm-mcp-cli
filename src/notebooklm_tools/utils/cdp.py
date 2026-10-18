@@ -75,7 +75,7 @@ def _normalize_ws_url(url: str | None) -> str | None:
 
 
 from notebooklm_tools.core.exceptions import AuthenticationError  # noqa: E402
-from notebooklm_tools.utils.config import get_base_url  # noqa: E402
+from notebooklm_tools.utils.config import NOTEBOOKLM_HOSTS, get_base_url  # noqa: E402
 
 __all__ = [
     "get_chrome_path",
@@ -1112,12 +1112,16 @@ def _is_notebooklm_url(url: str) -> bool:
     ``continue=https://notebooklm.google.com/...`` in the query string, but
     those pages are still accounts.google.com pages and should not be treated
     as NotebookLM tabs.
+
+    Recognizes every host in ``NOTEBOOKLM_HOSTS``, including the rebranded
+    ``notebook.google.com`` (Gemini Notebook) that Google now redirects to
+    after sign-in (issue #269).
     """
     try:
         host = (urlparse(url).hostname or "").lower()
     except Exception:
         return False
-    return host in {"notebooklm.google.com", "notebooklm.cloud.google.com"}
+    return host in NOTEBOOKLM_HOSTS
 
 
 def is_logged_in(url: str) -> bool:

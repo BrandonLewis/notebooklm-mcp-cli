@@ -157,6 +157,26 @@ For MCP server configuration, pass the variable in your client config:
 
 ---
 
+## Gemini Notebook rebrand (`notebook.google.com`)
+
+Google has begun rebranding NotebookLM to **Gemini Notebook** and redirecting
+`notebooklm.google.com` to `notebook.google.com`. Login-completion detection now
+recognizes the new host automatically, so `nlm login` no longer times out after
+being redirected there.
+
+If your account has fully moved to the new domain and API calls still return
+`401`, point the tool at the new host so all requests are issued there:
+
+```bash
+export NOTEBOOKLM_BASE_URL=https://notebook.google.com
+nlm login
+```
+
+The legacy `https://notebooklm.google.com` remains the default and keeps working
+for accounts that have not been migrated.
+
+---
+
 ## Method 2: File Mode
 
 This method lets you manually extract and provide cookies. Use this if:
